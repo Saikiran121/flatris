@@ -69,6 +69,19 @@ pipeline {
                 sh 'docker build -t saikiran8050/flatris:${BUILD_NUMBER} -t saikiran8050/flatris:latest .'
             }
         }
+
+        stage('Trivy Scan') {
+            steps {
+                echo 'Performing Trivy container scan on both images...'
+                sh 'trivy image --format json -o trivy-build-report.json saikiran8050/flatris:${BUILD_NUMBER}'
+                
+                sh 'trivy image saikiran8050/flatris:latest'
+                sh 'trivy image --format template --template "@contrib/html.tpl" -o trivy-report.html saikiran8050/flatris:latest'
+                
+                
+                archive includes: 'trivy-report.html,trivy-build-report.json'
+            }
+        }
     }
 
     post {
