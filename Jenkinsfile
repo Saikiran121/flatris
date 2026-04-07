@@ -26,8 +26,7 @@ pipeline {
                 }
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
 
-                // Using standard archive step because publishHTML plugin is not installed
-                archive artifacts: 'dependency-check-report.html'
+                archive includes: 'dependency-check-report.html'
             }
         }
 
