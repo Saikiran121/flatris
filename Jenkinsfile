@@ -81,6 +81,17 @@ pipeline {
                 archive includes: 'trivy-build-report.json'
             }
         }
+
+        stage('Docker Push') {
+            steps {
+                echo 'Pushing Docker images to Docker Hub...'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USER')]) {
+                    sh 'docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}'
+                    sh 'docker push saikiran8050/flatris:${BUILD_NUMBER}'
+                    sh 'docker push saikiran8050/flatris:latest'
+                }
+            }
+        }
     }
 
     post {
