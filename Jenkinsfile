@@ -18,26 +18,26 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                echo 'Performing SonarQube analysis...'
-                withSonarQubeEnv('sonar-server') {
-                    sh 'npx sonar-scanner -Dsonar.projectKey=flatris -Dsonar.sources=.'
-                }
-            }
-        }
-
         stage('Format Check') {
             steps {
                 echo 'Checking code formatting...'
-                sh "yarn prettier --check '**/*.{js,css}' '!**/{flow-typed,.next}/**'"
+                sh "yarn run prettier --check '**/*.{js,css}' '!**/{flow-typed,.next}/**'"
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                sh 'yarn test'
+                echo 'Running tests with coverage...'
+                sh 'yarn test --coverage'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Performing SonarQube analysis...'
+                withSonarQubeEnv('sonar-server') {
+                    sh 'npx sonar-scanner -Dsonar.projectKey=flatris -Dsonar.sources=. -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info'
+                }
             }
         }
     }
