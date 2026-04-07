@@ -18,6 +18,15 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Performing SonarQube analysis...'
+                withSonarQubeEnv('sonar-server') {
+                    sh 'npx sonar-scanner -Dsonar.projectKey=flatris -Dsonar.sources=.'
+                }
+            }
+        }
+
         stage('Format Check') {
             steps {
                 echo 'Checking code formatting...'
