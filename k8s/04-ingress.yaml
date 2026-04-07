@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - flatris.example.com
+    - flatris.saikbiradar.in
     secretName: flatris-tls
   rules:
-  - host: flatris.example.com
+  - host: flatris.saikbiradar.in
     http:
       paths:
       - path: /
