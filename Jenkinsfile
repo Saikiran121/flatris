@@ -22,18 +22,12 @@ pipeline {
             steps {
                 echo 'Running OWASP Dependency-Check...'
                 withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                    dependencyCheck additionalArguments: '--nvdApiKey ' + NVD_API_KEY + ' --format HTML --scan .', odcInstallation: 'dependency-check'
+                    dependencyCheck additionalArguments: '--nvdApiKey ' + NVD_API_KEY + ' --format HTML --scan . --exclude "**/node_modules/**" --exclude "**/bower_components/**" --disableAssembly', odcInstallation: 'dependency-check'
                 }
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
 
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: '.',
-                    reportFiles: 'dependency-check-report.html',
-                    reportName: 'Dependency Check HTML Report'
-                ])
+                // Using standard archive step because publishHTML plugin is not installed
+                archive artifacts: 'dependency-check-report.html'
             }
         }
 
@@ -57,6 +51,22 @@ pipeline {
                 withSonarQubeEnv('sonar-server') {
                     sh 'npx sonar-scanner -Dsonar.projectKey=flatris -Dsonar.sources=. -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info'
                 }
+            }
+        }
+
+        stage('SonarQube Quality Gate') {
+            steps {
+                echo 'Waiting for SonarQube Quality Gate...'
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                echo 'Building Docker image...'
+                sh 'docker build -t saikiran8050flatris:${BUILD_NUMBER} -t flatris:latest .'
             }
         }
     }
