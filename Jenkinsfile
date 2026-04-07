@@ -66,7 +66,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t saikiran8050flatris:${BUILD_NUMBER} -t flatris:latest .'
+                sh 'docker build -t saikiran8050/flatris:${BUILD_NUMBER} -t saikiran8050/flatris:latest .'
             }
         }
     }
