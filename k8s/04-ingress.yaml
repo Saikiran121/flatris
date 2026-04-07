@@ -3,12 +3,10 @@ kind: Ingress
 metadata:
   name: flatris-ingress
   namespace: flatris
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
-  tls:
-  - hosts:
-    - flatris.saikbiradar.in
-    secretName: flatris-tls
   rules:
   - host: flatris.saikbiradar.in
     http:
