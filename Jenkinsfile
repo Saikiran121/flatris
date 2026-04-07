@@ -33,7 +33,7 @@ pipeline {
         stage('Format Check') {
             steps {
                 echo 'Checking code formatting...'
-                sh "yarn run prettier --check '**/*.{js,css}' '!**/{flow-typed,.next}/**'"
+                sh "yarn run prettier --check '**/*.{js,css}' '!**/{flow-typed,.next,coverage}/**'"
             }
         }
 
