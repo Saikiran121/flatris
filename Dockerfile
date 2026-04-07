@@ -16,7 +16,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_OPTIONS=--openssl-legacy-provider
 
 RUN yarn build --webpack
-RUN yarn build:server
 
 FROM base AS runner
 ENV NODE_ENV=production
