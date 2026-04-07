@@ -116,13 +116,33 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline execution finished.'
-        }
-        success {
-            echo 'Build and tests passed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed. Please check the logs.'
+            script {
+                def status = currentBuild.currentResult
+                def color = (status == 'SUCCESS') ? '#36a64f' : (status == 'UNSTABLE' ? '#f2c12e' : '#ff0000')
+                def slackMessage = "*Build:* <${env.BUILD_URL}|${env.JOB_NAME} #${env.BUILD_NUMBER}>\n*Status:* ${status}\n*Project:* Flatris"
+                
+                withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK_URL')]) {
+                    sh """
+                        curl -X POST -H 'Content-type: application/json' \
+                        --data '{
+                            "attachments": [
+                                {
+                                    "color": "${color}",
+                                    "blocks": [
+                                        {
+                                            "type": "section",
+                                            "text": {
+                                                "type": "mrkdwn",
+                                                "text": "${slackMessage}"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }' ${SLACK_WEBHOOK_URL}
+                    """
+                }
+            }
         }
     }
 }
