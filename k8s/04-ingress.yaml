@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flatris-ingress
+  namespace: flatris
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+  - hosts:
+    - flatris.example.com
+    secretName: flatris-tls
+  rules:
+  - host: flatris.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: flatris-service
+            port:
+              number: 80

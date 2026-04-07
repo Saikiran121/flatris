@@ -92,6 +92,26 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to EKS') {
+            steps {
+                echo 'Deploying to Amazon EKS...'
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    sh 'aws eks update-kubeconfig --name flatris --region ap-south-1'
+                    
+                    // Update the deployment manifest with the new build number
+                    sh "sed -i 's|image: saikiran8050/flatris:latest|image: saikiran8050/flatris:${BUILD_NUMBER}|g' k8s/02-deployment.yaml"
+                    
+                    // Apply all manifests in the k8s folder (including 00-namespace.yaml)
+                    sh 'kubectl apply -f k8s/'
+                }
+            }
+        }
     }
 
     post {
