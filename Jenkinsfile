@@ -22,7 +22,7 @@ pipeline {
             steps {
                 echo 'Running OWASP Dependency-Check...'
                 withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                    dependencyCheck additionalArguments: '--nvdApiKey ' + NVD_API_KEY + ' --format HTML --scan . --exclude "**/node_modules/**" --exclude "**/bower_components/**" --disableAssembly', odcInstallation: 'dependency-check'
+                    dependencyCheck additionalArguments: '--nvdApiKey ' + NVD_API_KEY + ' --format HTML --format XML --format JSON --scan . --exclude "**/node_modules/**" --exclude "**/bower_components/**" --disableAssembly', odcInstallation: 'dependency-check'
                 }
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
 
