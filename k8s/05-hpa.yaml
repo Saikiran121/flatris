@@ -4,7 +4,6 @@ metadata:
   name: flatris-hpa
   namespace: flatris
 spec:
-  ingressClassName: nginx
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
